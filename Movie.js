@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './Header';
 import axios from 'axios';
+import Footer from './Footer';
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importation des styles Bootstrap
 import FirstRow from './component/FirstRow';
@@ -9,9 +10,10 @@ import SecondRow from './component/SecondRow';
 import ThirdRow from './component/thirdRow';
 import FourthRow from './component/fourtRow';
 
-const Apidata = () => {
+const Movie = () => {
   const { title,userID } = useParams();
   const [movie, setMovie] = useState(null);
+  const [movieData,setMovieData] =useState();
 
   const [data, setData] = useState({});
   //const [idMOvie,setIdmovie]=useState();
@@ -40,6 +42,9 @@ const Apidata = () => {
           const data = await response.json();
           setMovie(data.imdb_id || null);
           console.log(data);
+          setMovieData(data);
+          setLoading(false); // Arrêtez le chargement en cas d'erreur
+
         } catch (error) {
           console.error(error);
           setMovie(null);
@@ -141,14 +146,15 @@ const Apidata = () => {
               
                 data={data} />
                 <ThirdRow data={data} />
-                <FourthRow data={data} userID={userID} />
+                <FourthRow data={data} userID={userID} companie={movieData} />
             </div>
         ) : (
           <p>No film available</p>
         )}
       </div>
+      <Footer/>
     </>
   );
 };
 
-export default Apidata;
+export default Movie;

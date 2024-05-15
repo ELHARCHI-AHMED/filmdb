@@ -5,7 +5,7 @@ import axios from "axios";
 import "./App.css";
 import "./headerStyle.css";
 import "./searchResultsDropdown.css";
-import ApiData from "./Apidata";
+import ApiData from "./Movie";
 
 function Header() {
   const supabase = createClient(
@@ -29,7 +29,6 @@ function Header() {
         console.error("Error fetching user data:", error.message);
       } else {
         setUser(user);
-        console.log(user);
       }
     };
 
@@ -55,7 +54,7 @@ function Header() {
         const response = await fetch(`https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1&query=${searchTerm}`, options);
         const data = await response.json();
         setSearchResults(data.results || []);
-        console.log( data.results);
+        console.log(data.results);
       } catch (error) {
         console.error(error);
       }
@@ -95,13 +94,16 @@ function Header() {
     setSearchTerm(e.target.value);
   };
 
+  // const handleSearchResultClick = (result) => {
+  //   navigate(`/apidata/${result.id}`, { state: result });
+  // };
   const handleSearchResultClick = (result) => {
     if(user===null){
-      navigate(`/apidata/${result.id}`, { state: result });
+      navigate(`/movie/${result.id}`, { state: result });
 
     }
     else{
-      navigate(`/apidata/${result.id}/${user.id}`, { state: result });
+      navigate(`/movie/${result.id}/${user.id}`, { state: result });
 
     }
   };
@@ -110,7 +112,7 @@ function Header() {
     <>
       <header className="app-bar">
         <Link to="/" className="logo-link">
-          <img className="app-bar__logo logo" src="filmdb.png" alt="logo" />
+          <img className="app-bar__logo logo" src="filmdb.png" alt="logo" style={{ width: '100px' }} />
         </Link>
         <div className="app-bar__menu" onClick={toggleMenu}>
           <span className="app-bar__menu-icon">☰</span>

@@ -8,9 +8,12 @@ import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from 'react-router-dom';
 
 function FourthRow(props) {
+    const [isAddedToList, setIsAddedToList] = useState(false);
+
     const [genres, setGenres] = useState([]);
     const [user, setUser] = useState(null);
-    const navigate=useNavigate()
+    const navigate=useNavigate();
+    const [companies,setCompanies]=useState([])
 
 
     useEffect(() => {
@@ -60,7 +63,7 @@ function FourthRow(props) {
     //border: '2px solid blue', // Bordure rouge de 2 pixels
     marginLeft:'130px',
     height:50,
-    marginTop:'230px',
+    marginTop:'90px',
 
   };
   const plus={
@@ -88,43 +91,141 @@ function FourthRow(props) {
 
 
 
+  useEffect(
+    ()=>
+      {
+        const fetchListMovie = async () => {
+          try {
+              const { data, error } = await supabase
+                  .from('watchlist')
+                  .select('*')
+                  .eq('user_id', props.userID)
+                  .eq('movie_id', props.data.imdbID);
+                  //isAddedToList(true);
+
+
+              if (error) {
+                  console.error('Error fetching rating:', error.message);
+                  return;
+              }
+                               //setIsAddedToList(true);
+               setIsAddedToList(data.length > 0);
+
+              if (data.length > 0) {
+                console.log(data);
+              }
+          } catch (error) {
+              console.error('Error fetching rating:', error.message);
+          }
+      };
+      fetchListMovie();
+
+      }
+      ,
+      [props.userID,props.data.imdbID]
+  )
+  
+    
+
+
+
 
 
   const handelWhatchList = async () => {
-   if(props.userID){
-    console.log(props.userID);
 
-    // Vérifiez si les données du film sont disponibles
-  if (!props.data || !props.data.imdbID) {
-    console.error("No movie data available");
-    return;
-  }
-
-  try {
-    //await createTable();
-    // Insérez l'ID du film et l'ID de l'utilisateur connecté dans la table de la liste de surveillance de votre base de données Supabase
-    const { data, error } = await supabase.from('watchlist').insert([
-      { movie_id: props.data.imdbID, user_id: props.userID }
-    ]);
-
-    if (error) {
-      console.error("Error adding movie to watch listTT:", error);
-    } else {
-      console.log("Movie added to watch list:", data);
-      // Réalisez d'autres actions si nécessaire, comme mettre à jour l'interface utilisateur pour refléter l'ajout du film à la liste de surveillance
-    }
-  } catch (error) {
-    console.error("Error adding movie to watch list:", error.message);
-  }
-
-
-
-   }
-  };
-  
+    if(props.userID ){
     
-  
+      if(!isAddedToList){
+        console.log(props.userID);
 
+        // Vérifiez si les données du film sont disponibles
+      if (!props.data || !props.data.imdbID) {
+        console.error("No movie data available");
+        return;
+      }
+
+      try {
+        //await createTable();
+        // Insérez l'ID du film et l'ID de l'utilisateur connecté dans la table de la liste de surveillance de votre base de données Supabase
+        const { data, error } = await supabase.from('watchlist').insert([
+          { movie_id: props.data.imdbID, user_id: props.userID }
+        ]);
+        setIsAddedToList(true);
+
+
+        if (error) {
+          console.error("Error adding movie to watch listTT:", error);
+          return;
+
+        } else {
+          console.log("Movie added to watch list:", data);
+
+          // Réalisez d'autres actions si nécessaire, comme mettre à jour l'interface utilisateur pour refléter l'ajout du film à la liste de surveillance
+        }
+      } catch (error) {
+        console.error("Error adding movie to watch list:", error.message);
+      }
+
+
+
+      }
+      else{
+      
+          try {
+            // Delete the row where user_id and film_id match certain values
+            const { data, error } = await supabase
+                .from('watchlist')
+                .delete()
+                .eq('user_id', props.userID) // Match user_id
+                .eq('movie_id', props.data.imdbID); // Match film_id
+                setIsAddedToList(false);
+
+
+
+            if (error) {
+                console.error("Error removing movie from watch list:", error.message);
+            } else {
+                console.log("Movie removed from watch list:", data);
+                // Update the UI or perform other actions as needed
+
+            }
+
+        } catch (error) {
+            console.error("Error removing movie from watch list:", error.message);
+        }
+
+        
+      }
+  }
+  else{
+   
+      alert("you are not authentified");
+      console.log(props.companie.production_companies);
+
+    
+  }
+
+
+  };
+  useEffect(
+    ()=>{
+      console.log(props.companie);
+      if (props.companie && props.companie.production_companies) {
+        setCompanies(props.companie.production_companies);
+      }
+
+      //setCompanies(props.companie.production_companies);
+      
+
+    }
+    ,
+    [props.companie]
+  )
+
+
+  
+  
+  
 
   
 
@@ -162,9 +263,22 @@ function FourthRow(props) {
           </div>
         </div>
         <div className="col-3"  style={parentDivStyle}>
+        <div >
+      {companies &&companies.map((company, index) => (
+        // Vérification du logo_path avant de rendre l'image
+        company.logo_path ? (
+          <img key={index} src={`https://image.tmdb.org/t/p/w500${company.logo_path}`} alt={`Company Logo ${index}`} style={{ width: '100px',
+          height: 'auto' ,filter: 'invert(100%) sepia(100%) saturate(10000%) hue-rotate(330deg)',
+       margin:"5px",marginBottom:'15px'
+      
+        }} />
+        ) : ""
+      ))}
+    </div>
           
           <button className="watch-list-button" style={buttonStyle} onClick={()=>{handelWhatchList()}}>
-            <FontAwesomeIcon icon={faPlus} style={plus} /> add to list watch
+            <FontAwesomeIcon icon={faPlus} style={plus} /> { isAddedToList?"remove from list watch":'add to list watch'
+}
           </button>
           <div style={{marginTop:"22px"}} > 
 

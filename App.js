@@ -6,9 +6,11 @@ import SignIn from './SignInSide';
 import SignUp from './SignUpSide';
 import User from './User';
 import Watchlist from './Watchlist';
-import Movie from './MoviePage';
+//import Movie from './MoviePage';
+import Movie from './Movie';
+
 import SearchResults from './SearchResults';
-import Apidata from './Apidata';
+import Apidata from './Movie';
 
 
 function App() {
@@ -20,10 +22,11 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/user" element={<User />} />
         <Route path="/watchlist" element={<Watchlist />} />
-        <Route path="/movies/:id" element={<Movie />} />
         <Route path="/search" element={<SearchResults />} /> 
-        <Route path="/apidata/:title/:userID?" element={<Apidata />} />
-        <Route path="/SignInSide" element={<SignIn />} />
+        <Route path="/movie/:title/:userID?" element={<Movie />} />
+        {/* <Route path="/SignInSide" element={<SignIn />} /> */}
+        {/* <Route path="/apidata/:title" element={<Apidata />} /> */}
+        {/* <Route path="/apidata/:id" element={<Apidata />} /> */}
 
       </Routes>
 
