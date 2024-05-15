@@ -78,7 +78,6 @@
 
 // export default SearchResults;
 
-
 import React, { useEffect, useState } from 'react'; 
 import axios from 'axios';
 import { useSearchParams, Link } from 'react-router-dom';
